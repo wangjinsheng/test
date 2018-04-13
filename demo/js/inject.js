@@ -46,6 +46,13 @@ var bkeys = [];
 	bkeys.push("微店");
 	bkeys.push("平安科技");
 	bkeys.push("58");
+	bkeys.push("贝贝");
+	bkeys.push("蘑菇街");
+	bkeys.push("美丽联合");
+	bkeys.push("小米");
+	bkeys.push("唯品会");
+	bkeys.push("360");
+	bkeys.push("汽车超人");
 
 var messagelist = [];
 	messagelist.push("考虑我们51信用卡的机会吗？");
@@ -59,6 +66,9 @@ function sendMessageToContentScriptByPostMessage()
 {
 	//window.postMessage({cmd: 'message', data: data}, '*');
 	$("#recommend-list li").each(function (i) {
+		if($(this).is(":hidden")){
+			return;
+		}
 		var divText = $(this).children("a").children("div.text").html();
 		if(divText == undefined){
 			var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
@@ -88,6 +98,14 @@ function sendMessageToContentScriptByPostMessage()
 }
 
 function hideSelfDiv(item,value,list){
+	var flag = ifneedHide(item,value,list);
+	if (!flag) {
+		$(item).hide();
+	};
+
+}
+
+function ifneedHide(item,value,list){
 	var flag = false;
 	$.each(bkeys,function(index,item){
 		if(value.search(item)!=-1){
@@ -118,11 +136,42 @@ function hideSelfDiv(item,value,list){
 			flag = false;
 		}
 	}
+	return flag;
+}
 
-	if (!flag) {
-		$(item).hide();
+function quickIfHide(item,value,list){
+	var flag = false;
+	$.each(bkeys,function(index,item){
+		if(value.search(item)!=-1){
+			flag = true;
+		}
+	})
+	if (list == 'nextOne') {
+		if (flag) {
+			var nextOne = $(item).children("div.sider-op").html();
+			if(nextOne.search("继续沟通")!=-1){
+				flag = false;
+			}
+		};
 	};
 
+	if (flag) {
+		var graduat = $(item).children("a").children("div.info-labels").html();
+		if(graduat.search("应届生")!=-1){
+			flag = false;
+		}
+	};
+	
+
+	if (flag) {
+		if(value.search("外派")!=-1){
+			flag = false;
+		}
+		if(value.search("外包")!=-1){
+			flag = false;
+		}
+	}
+	return flag;
 }
 
 
@@ -151,16 +200,21 @@ function requestDisable(){
 	$(chatdiv).children("div.chat-controls").children("a.btn-resume").children("span").html("求简历");
 }
 
-// 一键快速消息发送
-function quickMessage(){
-
-
-}
 
 function requestWeixin(){
 	doRequest("btn-weixin");
 }
 function requestResume(){
+	var chatdiv = $("#container").children("div.chat-container").children("div.sec-content").children("div.detail-box")
+	.children("div.chat-wrap").children("div.chat-tab-content").children("div.chat-editor");
+	
+	var chatOp = $(chatdiv).children("div.chat-op");
+	var chatOpBt = $(chatOp).children("button");
+	if($(chatdiv).children("div.chat-controls").children("a.btn-resume").hasClass("disabled")){
+		$(chatdiv).children("div.chat-message").html("方便发一份简历过来吗？");
+		$(chatOpBt).click();
+	}
+
 	doRequest("btn-resume");
 }
 
@@ -171,4 +225,35 @@ function doRequest(dataName){
 
 	// alert($(".dialog-container").html());
 	$(".dialog-container").children("div.dialog-footer").children("div.btns").children("span.btn-sure").click();
+}
+
+// 一键快速消息发送
+function quickMessage(data){
+	var index = 0;
+	$("#recommend-list li").each(function(i){
+		if(!$(this).is(":hidden")){
+			// alert($(this).html());
+			var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
+			var ifHide = ifneedHide(this,objectHtml,data);
+			if(ifHide){
+				if(index < 1){
+					$(this).children("div.sider-op").children("button").click();
+				}
+				
+				index = index + 1;
+			}
+		}
+	});
+}
+
+function receiverResume(){
+	var chatdiv = $("#container").children("div.chat-container").children("div.sec-content").children("div.detail-box")
+	.children("div.chat-wrap").children("div.chat-tab-content");
+	$(chatdiv).children("div.notice-dialog").children().children("span.btn-agree").click();
+}
+
+function goBackMuen(){
+	var muenA = $("div.side-menu").children("dl.menu-recommend").children().children();
+	// alert($(muenA).html());
+	$(muenA).click();
 }
