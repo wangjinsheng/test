@@ -20,56 +20,6 @@ function invokeContentScript(code)
 
 // ---------------------------自定义数组---------------------------------
 
-// var bkeys = [];
-// 	bkeys.push("ali");
-// 	bkeys.push("阿里");
-// 	bkeys.push("网易");
-// 	bkeys.push("京东");
-// 	bkeys.push("天猫");
-// 	bkeys.push("支付宝");
-// 	bkeys.push("华为");
-// 	bkeys.push("百度");
-// 	bkeys.push("滴滴");
-// 	bkeys.push("美团");
-// 	bkeys.push("拼多多");
-// 	bkeys.push("去哪网");
-// 	bkeys.push("趣拿");
-// 	bkeys.push("新浪");
-// 	bkeys.push("有赞");
-// 	bkeys.push("挖财");
-// 	bkeys.push("腾讯");
-// 	bkeys.push("大众");
-// 	bkeys.push("菜鸟");
-// 	bkeys.push("饿了么");
-// 	bkeys.push("拉扎斯");
-// 	bkeys.push("携程");
-// 	bkeys.push("微店");
-// 	bkeys.push("平安科技");
-// 	bkeys.push("58");
-// 	bkeys.push("贝贝");
-// 	bkeys.push("蘑菇街");
-// 	bkeys.push("美丽联合");
-// 	bkeys.push("小米");
-// 	bkeys.push("唯品会");
-// 	bkeys.push("360");
-// 	bkeys.push("汽车超人");
-// 	bkeys.push("淘宝");
-// 	bkeys.push("蚂蚁");
-// 	bkeys.push("1号店");
-// 	bkeys.push("搜狗");
-// 	bkeys.push("搜狐");
-// 	bkeys.push("众安");
-// 	bkeys.push("宜信");
-// 	bkeys.push("头条");
-// 	bkeys.push("爱奇艺");
-// 	bkeys.push("微博");
-// 	bkeys.push("小红书");
-// 	bkeys.push("点我");
-// 	bkeys.push("高德");
-// 	bkeys.push("聚划算");
-// 	bkeys.push("微贷");
-// 	bkeys.push("曹操");
-// 	bkeys.push("兑吧");
 
 var bkeys = new Array("ali","阿里","网易","京东","天猫","支付宝","华为","百度","滴滴","美团","拼多多",
 	"去哪网","趣拿","新浪","有赞","挖财","腾讯","大众","菜鸟","饿了么","拉扎斯","携程","微店","平安科技","58","贝贝","蘑菇街",
@@ -113,20 +63,27 @@ function sendMessageToContentScriptByPostMessage()
 }
 
 function queryNew(){
-	$("#recommend-list li").each(function (i) {
-		if($(this).is(":hidden")){
-			return;
-		}
-		var divText = $(this).children("a").children("div.text").html();
-		if(divText == undefined){
-			var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
-			hideSelfDivQueryNeq(this,objectHtml,"list");
-		}else{
-			// alert(divText);
-			hideSelfDivQueryNeq(this,divText,"other");
-		}
-	});
-	clickLoadmoreDiv();
+	for (var i = 0; i < 40; i++) {
+		var extrnal = i * 400;
+		// alert(extrnal);
+		sleep(extrnal).then(() => {
+           $("#recommend-list li").each(function (i) {
+			if($(this).is(":hidden")){
+				return;
+			}
+			var divText = $(this).children("a").children("div.text").html();
+			if(divText == undefined){
+				var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
+				hideSelfDivQueryNeq(this,objectHtml,"list");
+			}else{
+				// alert(divText);
+				hideSelfDivQueryNeq(this,divText,"other");
+			}
+			});
+			// clickLoadmoreDiv();
+			$("div.loadmore").click();
+		})
+	};
 }
 function hideSelfDivQueryNeq(item,value,list){
 	var flag = ifneedHideQueryNeq(item,value,list);
@@ -147,7 +104,7 @@ function ifneedHideQueryNeq(item,value,list){
 
 		if (flag) {
 			var graduat = $(item).children("a").children("div.info-labels").html();
-			if(graduat.search("应届生")!=-1 || graduat.search("大专")!=-1){
+			if(graduat.search("应届生")!=-1 || graduat.search("大专")!=-1 || graduat.search("1年")!=-1){
 				flag = false;
 			}
 		};
@@ -189,7 +146,7 @@ function ifneedHide(item,value,list){
 
 		if (flag) {
 			var graduat = $(item).children("a").children("div.info-labels").html();
-			if(graduat.search("应届生")!=-1){
+			if(graduat.search("应届生")!=-1 || graduat.search("大专")!=-1 || graduat.search("1年")!=-1){
 				flag = false;
 			}
 		};
@@ -224,8 +181,8 @@ function quickIfHide(item,value,list){
 
 	if (flag) {
 		var graduat = $(item).children("a").children("div.info-labels").html();
-		if(graduat.search("应届生")!=-1){
-			flag = false;
+		if(graduat.search("应届生")!=-1 || graduat.search("大专")!=-1 || graduat.search("1年")!=-1){
+				flag = false;
 		}
 	};
 	
