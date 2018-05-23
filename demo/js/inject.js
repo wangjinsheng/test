@@ -20,39 +20,63 @@ function invokeContentScript(code)
 
 // ---------------------------自定义数组---------------------------------
 
-var bkeys = [];
-	bkeys.push("ali");
-	bkeys.push("阿里");
-	bkeys.push("网易");
-	bkeys.push("京东");
-	bkeys.push("天猫");
-	bkeys.push("支付宝");
-	bkeys.push("华为");
-	bkeys.push("百度");
-	bkeys.push("滴滴");
-	bkeys.push("美团");
-	bkeys.push("拼多多");
-	bkeys.push("去哪网");
-	bkeys.push("趣拿");
-	bkeys.push("新浪");
-	bkeys.push("有赞");
-	bkeys.push("挖财");
-	bkeys.push("腾讯");
-	bkeys.push("大众");
-	bkeys.push("菜鸟");
-	bkeys.push("饿了么");
-	bkeys.push("拉扎斯");
-	bkeys.push("携程");
-	bkeys.push("微店");
-	bkeys.push("平安科技");
-	bkeys.push("58");
-	bkeys.push("贝贝");
-	bkeys.push("蘑菇街");
-	bkeys.push("美丽联合");
-	bkeys.push("小米");
-	bkeys.push("唯品会");
-	bkeys.push("360");
-	bkeys.push("汽车超人");
+// var bkeys = [];
+// 	bkeys.push("ali");
+// 	bkeys.push("阿里");
+// 	bkeys.push("网易");
+// 	bkeys.push("京东");
+// 	bkeys.push("天猫");
+// 	bkeys.push("支付宝");
+// 	bkeys.push("华为");
+// 	bkeys.push("百度");
+// 	bkeys.push("滴滴");
+// 	bkeys.push("美团");
+// 	bkeys.push("拼多多");
+// 	bkeys.push("去哪网");
+// 	bkeys.push("趣拿");
+// 	bkeys.push("新浪");
+// 	bkeys.push("有赞");
+// 	bkeys.push("挖财");
+// 	bkeys.push("腾讯");
+// 	bkeys.push("大众");
+// 	bkeys.push("菜鸟");
+// 	bkeys.push("饿了么");
+// 	bkeys.push("拉扎斯");
+// 	bkeys.push("携程");
+// 	bkeys.push("微店");
+// 	bkeys.push("平安科技");
+// 	bkeys.push("58");
+// 	bkeys.push("贝贝");
+// 	bkeys.push("蘑菇街");
+// 	bkeys.push("美丽联合");
+// 	bkeys.push("小米");
+// 	bkeys.push("唯品会");
+// 	bkeys.push("360");
+// 	bkeys.push("汽车超人");
+// 	bkeys.push("淘宝");
+// 	bkeys.push("蚂蚁");
+// 	bkeys.push("1号店");
+// 	bkeys.push("搜狗");
+// 	bkeys.push("搜狐");
+// 	bkeys.push("众安");
+// 	bkeys.push("宜信");
+// 	bkeys.push("头条");
+// 	bkeys.push("爱奇艺");
+// 	bkeys.push("微博");
+// 	bkeys.push("小红书");
+// 	bkeys.push("点我");
+// 	bkeys.push("高德");
+// 	bkeys.push("聚划算");
+// 	bkeys.push("微贷");
+// 	bkeys.push("曹操");
+// 	bkeys.push("兑吧");
+
+var bkeys = new Array("ali","阿里","网易","京东","天猫","支付宝","华为","百度","滴滴","美团","拼多多",
+	"去哪网","趣拿","新浪","有赞","挖财","腾讯","大众","菜鸟","饿了么","拉扎斯","携程","微店","平安科技","58","贝贝","蘑菇街",
+	"美丽联合","小米","唯品会","360","汽车超人","淘宝","蚂蚁","1号店","搜狗","搜狐","众安","宜信","头条",
+	"爱奇艺","微博","小红书","点我","高德","聚划算","微贷");
+	bkeys.push("曹操");
+	bkeys.push("兑吧");
 
 var messagelist = [];
 	messagelist.push("考虑我们51信用卡的机会吗？");
@@ -65,6 +89,30 @@ var messagelist = [];
 function sendMessageToContentScriptByPostMessage()
 {
 	//window.postMessage({cmd: 'message', data: data}, '*');
+	for (var i = 0; i < 40; i++) {
+		var extrnal = i * 400;
+		// alert(extrnal);
+		sleep(extrnal).then(() => {
+           $("#recommend-list li").each(function (i) {
+			if($(this).is(":hidden")){
+				return;
+			}
+			var divText = $(this).children("a").children("div.text").html();
+			if(divText == undefined){
+				var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
+				hideSelfDiv(this,objectHtml,"list");
+			}else{
+				// alert(divText);
+				hideSelfDiv(this,divText,"other");
+			}
+			});
+			// clickLoadmoreDiv();
+			$("div.loadmore").click();
+		})
+	};
+}
+
+function queryNew(){
 	$("#recommend-list li").each(function (i) {
 		if($(this).is(":hidden")){
 			return;
@@ -72,29 +120,48 @@ function sendMessageToContentScriptByPostMessage()
 		var divText = $(this).children("a").children("div.text").html();
 		if(divText == undefined){
 			var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
-			// var flag = false;
-			// $.each(bkeys,function(index,item){
-			// 	if(objectHtml.search(item)!=-1){
-			// 		flag = true;
-			// 	}
-			// })
-
-			// if (flag) {
-			// 	var nextOne = $(this).children("div.sider-op").html();
-			// 	if(nextOne.search("继续沟通")!=-1){
-			// 		flag = false;
-			// 	}
-			// };
-			
-			// if (!flag) {
-			// 	$(this).hide();
-			// };
-			hideSelfDiv(this,objectHtml,"list");
+			hideSelfDivQueryNeq(this,objectHtml,"list");
 		}else{
 			// alert(divText);
-			hideSelfDiv(this,divText,"other");
+			hideSelfDivQueryNeq(this,divText,"other");
 		}
 	});
+	clickLoadmoreDiv();
+}
+function hideSelfDivQueryNeq(item,value,list){
+	var flag = ifneedHideQueryNeq(item,value,list);
+	if (!flag) {
+		$(item).hide();
+	};
+
+}
+function ifneedHideQueryNeq(item,value,list){
+	var flag = true;
+	if (list == 'list') {
+		if (flag) {
+			var nextOne = $(item).children("div.sider-op").html();
+			if(nextOne.search("继续沟通")!=-1){
+				flag = false;
+			}
+		};
+
+		if (flag) {
+			var graduat = $(item).children("a").children("div.info-labels").html();
+			if(graduat.search("应届生")!=-1 || graduat.search("大专")!=-1){
+				flag = false;
+			}
+		};
+	};
+
+	if (flag) {
+		if(value.search("外派")!=-1){
+			flag = false;
+		}
+		if(value.search("外包")!=-1){
+			flag = false;
+		}
+	}
+	return flag;
 }
 
 function hideSelfDiv(item,value,list){
@@ -238,12 +305,45 @@ function quickMessage(data){
 			if(ifHide){
 				if(index < 1){
 					$(this).children("div.sider-op").children("button").click();
+					nextQuickMessage($(this).children("div.sider-op").children("button"));//延时点击
 				}
 				
 				index = index + 1;
 			}
 		}
 	});
+}
+
+// 一键快速消息发送
+function quickMessageNew(){
+	var index = 0;
+	$("#recommend-list li").each(function(i){
+		if(!$(this).is(":hidden")){
+			// alert($(this).html());
+			var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
+			var flag = ifneedHideQueryNeq(this,objectHtml,"list");
+			if(ifHide){
+				if(index < 1){
+					$(this).children("div.sider-op").children("button").click();
+					nextQuickMessage($(this).children("div.sider-op").children("button"));//延时点击
+				}
+				
+				index = index + 1;
+			}
+		}
+	});
+}
+
+function nextQuickMessage(item){
+	setTimeout(function(){
+			$(item).click();
+			setTimeout(function(){
+				sendMessageToCandidate();
+				setTimeout(function(){
+					goBackMuen();
+				},400);
+			},600);
+		},800);
 }
 
 function receiverResume(){
@@ -257,3 +357,17 @@ function goBackMuen(){
 	// alert($(muenA).html());
 	$(muenA).click();
 }
+
+function clickLoadmoreDiv(){
+	setTimeout(function(){
+		$("div.loadmore").click();
+		setTimeout(function(){
+			$("div.loadmore").click();
+		},300);
+
+	},300);
+}
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
