@@ -77,6 +77,7 @@ function initCustomPanel()
 		&nbsp;<a href="javascript:requestResume()">取简历</a> &nbsp;<a href="javascript:receiverResume()">收简历</a> <br>
 		<a href="javascript:goBackMuen()">推荐牛人</a>&nbsp;&nbsp;<a href="javascript:quickMessage('')">快速消息</a> &nbsp;&nbsp;<a href="javascript:sendMessageToCandidate()">发消息</a> <br>
 		<a href="javascript:queryNew()">拉新撩</a>&nbsp;&nbsp;<a href="javascript:quickMessageNew('')">撩新人</a>  <br>
+		// <a href="javascript:testStore()">撩新人</a>  <br>
 	</div>
 	<div id="my_custom_log">
 	</div>

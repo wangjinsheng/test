@@ -39,22 +39,34 @@ var messagelist = [];
 function sendMessageToContentScriptByPostMessage()
 {
 	//window.postMessage({cmd: 'message', data: data}, '*');
+	var itemList = getItemList();
 	for (var i = 0; i < 40; i++) {
 		var extrnal = i * 400;
 		// alert(extrnal);
 		sleep(extrnal).then(() => {
            $("#recommend-list li").each(function (i) {
-			if($(this).is(":hidden")){
-				return;
-			}
-			var divText = $(this).children("a").children("div.text").html();
-			if(divText == undefined){
-				var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
-				hideSelfDiv(this,objectHtml,"list");
-			}else{
-				// alert(divText);
-				hideSelfDiv(this,divText,"other");
-			}
+				if($(this).is(":hidden")){
+					return;
+				}
+				var divText = $(this).children("a").children("div.text").html();
+				if(divText == undefined){
+					var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
+					hideSelfDiv(this,objectHtml,itemList,"list");
+				}else{
+					// alert(divText);
+					hideSelfDiv(this,divText,itemList,"other");
+				}
+
+				var deleteSpanItem = $(this).children("div .sider-op").children("span.deleteSpanItem").html();
+				// alert(deleteSpanItem);
+
+				if(typeof(deleteSpanItem) == "undefined"){
+					var dataUid = $(this).children('a').attr("data-uid");
+
+			   		var link = '<span class="deleteSpanItem" style="cursor:pointer" onclick="deleteSpanItem('+dataUid+')">过滤</span>';
+			   		// alert(dataUid);
+					$(this).children("div .sider-op").prepend(link);
+				}
 			});
 			// clickLoadmoreDiv();
 			$("div.loadmore").click();
@@ -63,36 +75,51 @@ function sendMessageToContentScriptByPostMessage()
 }
 
 function queryNew(){
+	var itemList = getItemList();
+
 	for (var i = 0; i < 40; i++) {
 		var extrnal = i * 400;
 		// alert(extrnal);
 		sleep(extrnal).then(() => {
            $("#recommend-list li").each(function (i) {
-			if($(this).is(":hidden")){
-				return;
-			}
-			var divText = $(this).children("a").children("div.text").html();
-			if(divText == undefined){
-				var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
-				hideSelfDivQueryNeq(this,objectHtml,"list");
-			}else{
-				// alert(divText);
-				hideSelfDivQueryNeq(this,divText,"other");
-			}
+				if($(this).is(":hidden")){
+					return;
+				}
+				var divText = $(this).children("a").children("div.text").html();
+				if(divText == undefined){
+					var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
+					hideSelfDivQueryNeq(this,objectHtml,itemList,"list");
+				}else{
+					// alert(divText);
+					hideSelfDivQueryNeq(this,divText,itemList,"other");
+				}
+				
+				var deleteSpanItem = $(this).children("div .sider-op").children("span.deleteSpanItem").html();
+				// alert(deleteSpanItem);
+
+				if(typeof(deleteSpanItem) == "undefined"){
+					var dataUid = $(this).children('a').attr("data-uid");
+
+			   		var link = '<span class="deleteSpanItem" style="cursor:pointer" onclick="deleteSpanItem('+dataUid+')">过滤</span>';
+			   		// alert(dataUid);
+					$(this).children("div .sider-op").prepend(link);
+				}
 			});
+
+           
 			// clickLoadmoreDiv();
 			$("div.loadmore").click();
 		})
 	};
 }
-function hideSelfDivQueryNeq(item,value,list){
-	var flag = ifneedHideQueryNeq(item,value,list);
+function hideSelfDivQueryNeq(item,value,itemList,list){
+	var flag = ifneedHideQueryNeq(item,value,itemList,list);
 	if (!flag) {
 		$(item).hide();
 	};
 
 }
-function ifneedHideQueryNeq(item,value,list){
+function ifneedHideQueryNeq(item,value,itemList,list){
 	var flag = true;
 	if (list == 'list') {
 		if (flag) {
@@ -118,18 +145,28 @@ function ifneedHideQueryNeq(item,value,list){
 			flag = false;
 		}
 	}
+
+	var dataUid = $(item).children("a").attr("data-uid");
+	if(flag){
+		$.each(itemList,function(index,indexItem){
+		if(indexItem == dataUid){
+				// alert(dataUid);
+				flag = false;
+			}
+		});
+	}
 	return flag;
 }
 
-function hideSelfDiv(item,value,list){
-	var flag = ifneedHide(item,value,list);
+function hideSelfDiv(item,value,itemList,list){
+	var flag = ifneedHide(item,value,itemList,list);
 	if (!flag) {
-		$(item).hide();
+		$(item).remove();
 	};
 
 }
 
-function ifneedHide(item,value,list){
+function ifneedHide(item,value,itemList,list){
 	var flag = false;
 	$.each(bkeys,function(index,item){
 		if(value.search(item)!=-1){
@@ -159,6 +196,15 @@ function ifneedHide(item,value,list){
 		if(value.search("外包")!=-1){
 			flag = false;
 		}
+	}
+	var dataUid = $(item).children("a").attr("data-uid");
+	if(flag){
+		$.each(itemList,function(index,indexItem){
+		if(indexItem == dataUid){
+				// alert(dataUid);
+				flag = false;
+			}
+		});
 	}
 	return flag;
 }
@@ -278,7 +324,7 @@ function quickMessageNew(){
 		if(!$(this).is(":hidden")){
 			// alert($(this).html());
 			var objectHtml = $(this).children("a").children("div.chat-info").children("div.text").html();
-			var flag = ifneedHideQueryNeq(this,objectHtml,"list");
+			var flag =  (this,objectHtml,"list");
 			if(ifHide){
 				if(index < 1){
 					$(this).children("div.sider-op").children("button").click();
@@ -326,5 +372,88 @@ function clickLoadmoreDiv(){
 }
 function sleep (time) {
   return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+function testStore(){
+	// alert(333);
+	$("#recommend-list li").each(function(i){
+   		// alert($(this).children('a').attr("data-uid"));
+   		var itemlink = $(this).children('a');
+   		var dataUid = itemlink.attr("data-uid");
+   		var link = '<span onclick="deleteSpanItem('+dataUid+')">span</span>';
+   		// $(this).children('a').children("div.info-labels").append(link); 
+   		// alert( $(this).children("div .sider-op").html());
+		$(this).children("div .sider-op").prepend(link);
+
+   	});
+	
+}
+
+function deleteSpanItem(item){
+	// alert(item)
+	storeItem(item);
+}
+
+function storeItem(param){
+	var storage=window.localStorage;
+  	var realJobId;
+  	$("div.dropdown-menu li").each(function(i){
+  		if($(this).hasClass('cur')){
+  			var jobid = $(this).attr("data-jobid");
+  			if(typeof(jobid) != "undefined"){
+  				realJobId = jobid;
+  			}
+  		}
+  	});
+  	// storage.removeItem(realJobId);
+ 	var itemList;
+ 	var storExp=storage.getItem(realJobId);
+ 	// alert(storExp);
+ 	if (!storExp && typeof(storExp)!="undefined" && storExp!=0) { 
+
+		itemList = [];
+	}else{
+		// itemList = JSON.parse(storExp);
+		itemList = storExp.split(',');
+	}
+
+
+	var operateItem = param;
+	var flag = false;
+	$.each(itemList,function(index,item){
+	if(item == operateItem){
+			flag = true;
+		}
+	})
+
+	if(!flag){
+		itemList.push(operateItem);
+	}
+   	storage.setItem(realJobId,itemList);
+}
+
+function getItemList(){
+	var storage=window.localStorage;
+  	var realJobId;
+  	$("div.dropdown-menu li").each(function(i){
+  		if($(this).hasClass('cur')){
+  			var jobid = $(this).attr("data-jobid");
+  			if(typeof(jobid) != "undefined"){
+  				realJobId = jobid;
+  			}
+  		}
+  	});
+  	// storage.removeItem(realJobId);
+ 	var itemList;
+ 	var storExp=storage.getItem(realJobId);
+ 	// alert(storExp);
+ 	if (!storExp && typeof(storExp)!="undefined" && storExp!=0) { 
+
+		itemList = [];
+	}else{
+		// itemList = JSON.parse(storExp);
+		itemList = storExp.split(',');
+	}
+	return itemList;
 }
 
